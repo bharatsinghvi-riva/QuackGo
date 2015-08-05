@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Quack Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_bar">Search Bar</string>
+    <string name="search_button">Search</string>
+    <string name="internet_state_button">Internet State Button</string>
+    <string name="internet_state">Internet State</string>
+    <string name="empty_search_field">Please enter search text</string>
+    <string name="title_activity_quack_search">QuackSearch</string>
+
+    <string name="hello_world">Hello world!</string>
+</resources>
