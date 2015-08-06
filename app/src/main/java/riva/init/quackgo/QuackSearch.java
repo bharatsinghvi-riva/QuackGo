@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,21 +16,25 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import riva.init.quackgo.history.SearchHistoryDataSource;
 
 
 public class QuackSearch extends ActionBarActivity {
 
     private static final String searchEngine = "http://www.google.com/#q=";
+    private static final String TAG = QuackSearch.class.getSimpleName();
 
     private AutoCompleteTextView _searchField;
     private Button _searchButton;
     private Switch _internetState;
 
+    private SearchHistoryDataSource searchHistoryDataSource;
+
     private void instantiate() {
         _searchField = (AutoCompleteTextView) findViewById(R.id.search_bar);
         _searchButton = (Button) findViewById(R.id.search_button);
         _internetState = (Switch) findViewById(R.id.internet_state);
+        searchHistoryDataSource = new SearchHistoryDataSource(this);
     }
 
     @Override
@@ -47,8 +52,8 @@ public class QuackSearch extends ActionBarActivity {
             }
         });
 
-        HTTPSuggestionsAdapter httpSuggestionsAdapter = new HTTPSuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
-        _searchField.setAdapter(httpSuggestionsAdapter);
+        SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
+        _searchField.setAdapter(suggestionsAdapter);
     }
 
     private boolean isEmpty() {
@@ -59,7 +64,14 @@ public class QuackSearch extends ActionBarActivity {
         if (isEmpty()) {
             Toast.makeText(this, R.string.empty_search_field, Toast.LENGTH_SHORT);
         } else {
-            String url = searchEngine + _searchField.getEditableText();
+            try {
+                searchHistoryDataSource.open();
+                searchHistoryDataSource.insertSearchHistory(_searchField.getEditableText().toString());
+                searchHistoryDataSource.close();
+            } catch (Exception e) {
+                Log.e(TAG, "Error in database operations. " + e.getMessage());
+            }
+            String url = searchEngine + _searchField.getEditableText().toString();
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
@@ -75,23 +87,16 @@ public class QuackSearch extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_quack_search, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
