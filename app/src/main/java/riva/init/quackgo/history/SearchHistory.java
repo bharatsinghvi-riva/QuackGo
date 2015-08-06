@@ -17,7 +17,7 @@ public class SearchHistory {
 
     @Override
     public String toString() {
-        return searchText;
+        return searchText + "(from local)";
     }
 
 }

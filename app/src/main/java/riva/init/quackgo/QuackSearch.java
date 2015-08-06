@@ -1,7 +1,9 @@
 package riva.init.quackgo;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -44,6 +46,8 @@ public class QuackSearch extends ActionBarActivity {
         instantiate();
 
         if (isConnected()) _internetState.toggle();
+
+        registerReceiver(new ConnectivityChangeReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         _searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,5 +102,28 @@ public class QuackSearch extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class ConnectivityChangeReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = isConnected();
+            if(isConnected) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        _internetState.setChecked(true);
+                    }
+                });
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        _internetState.setChecked(false);
+                    }
+                });
+            }
+        }
     }
 }
