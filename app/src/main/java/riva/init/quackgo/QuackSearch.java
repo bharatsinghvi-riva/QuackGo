@@ -29,7 +29,7 @@ import riva.init.quackgo.history.SearchHistoryDataSource;
 
 public class QuackSearch extends ActionBarActivity {
 
-    private static final String searchEngine = "http://www.google.com/#q=";
+    private static final String searchEngine = "http://www.google.com/?q=";
     private static final String TAG = QuackSearch.class.getSimpleName();
 
     @Bind(R.id.search_bar) AutoCompleteTextView _searchField;

@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/search_button_webview"
-        android:hint="@string/webview_addressbar_hint" />
+        android:hint="@string/webview_addressbar_hint"
+        android:singleLine="true"/>
 
     <Button
         android:id="@+id/search_button_webview"

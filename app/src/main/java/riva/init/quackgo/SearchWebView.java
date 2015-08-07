@@ -1,12 +1,17 @@
 package riva.init.quackgo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -39,13 +44,23 @@ public class SearchWebView extends Activity {
                 return true;
             }
         });
-        System.out.println(URL);
+
         searchWebView.loadUrl(URL);
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     @OnClick(R.id.search_button_webview)
     protected void loadURL() {
         searchWebView.loadUrl(addressBar.getText().toString());
+        hideKeyBoard();
     }
 
     @Override
