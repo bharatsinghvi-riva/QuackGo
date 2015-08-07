@@ -10,4 +10,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_search_web_view">SearchWebView</string>
+    <string name="search_button_webview">Go</string>
+    <string name="webview_addressbar_hint">Enter URL to Browse</string>
+    <string name="notification_textview_hint">Enter Your Search Query</string>
 </resources>

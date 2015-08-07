@@ -1,21 +1,22 @@
 package riva.init.quackgo;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.RemoteViews;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -52,6 +53,20 @@ public class QuackSearch extends ActionBarActivity {
 
         SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
         _searchField.setAdapter(suggestionsAdapter);
+
+        setStickyNotification();
+    }
+
+    private void setStickyNotification() {
+        Intent notificationIntent = new Intent(this, QuackSearch.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification stickyNotification = new Notification(R.mipmap.ic_launcher, null, System.currentTimeMillis());
+        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification_custom_view);
+        stickyNotification.contentView = notificationView;
+        stickyNotification.flags = Notification.FLAG_NO_CLEAR;
+        stickyNotification.contentIntent = contentIntent;
+        notificationManager.notify(1, stickyNotification);
     }
 
     private boolean isEmpty() {
@@ -68,7 +83,7 @@ public class QuackSearch extends ActionBarActivity {
                 searchHistoryDataSource.insertSearchHistory(_searchField.getEditableText().toString());
                 searchHistoryDataSource.close();
             } catch (Exception e) {
-                Log.e(TAG, "Error in database operations. " + e.getMessage());
+                Log.e(TAG, "Error in adding keyword to database. " + e.getMessage());
             }
             Intent searchResults = new Intent(QuackSearch.this, SearchWebView.class);
             searchResults.putExtra("keyword", _searchField.getEditableText().toString());

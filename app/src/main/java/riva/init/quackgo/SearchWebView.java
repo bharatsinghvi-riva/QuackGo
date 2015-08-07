@@ -9,15 +9,20 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class SearchWebView extends Activity {
 
     private static final String SEARCH_ENGINE = "http://www.google.com/#q=";
     @Bind(R.id.search_webview) WebView searchWebView;
+    @Bind(R.id.address_bar) EditText addressBar;
+    @Bind(R.id.search_button_webview) Button searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,11 @@ public class SearchWebView extends Activity {
         });
         System.out.println(URL);
         searchWebView.loadUrl(URL);
+    }
+
+    @OnClick(R.id.search_button_webview)
+    protected void loadURL() {
+        searchWebView.loadUrl(addressBar.getText().toString());
     }
 
     @Override

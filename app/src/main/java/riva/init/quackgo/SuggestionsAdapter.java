@@ -7,6 +7,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import riva.init.quackgo.history.SearchHistoryDataSource;
 
@@ -58,9 +59,11 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterab
                         Log.e(TAG, "Failed to retrieve suggestions. " + e.getMessage());
                     }
                 }
+                HashSet<String> allSuggestionsSet = new HashSet<>();
+                allSuggestionsSet.addAll(localSuggestionsList);
+                allSuggestionsSet.addAll(httpSuggestionsList);
                 allSuggestionsList = new ArrayList<>();
-                allSuggestionsList.addAll(localSuggestionsList);
-                allSuggestionsList.addAll(httpSuggestionsList);
+                allSuggestionsList.addAll(allSuggestionsSet);
                 FilterResults results = new FilterResults();
                 results.values = allSuggestionsList;
                 results.count = allSuggestionsList.size();

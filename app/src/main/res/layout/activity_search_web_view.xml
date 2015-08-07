@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/address_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/search_button_webview"
+        android:hint="@string/webview_addressbar_hint" />
+
+    <Button
+        android:id="@+id/search_button_webview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/search_button_webview"
+        android:layout_alignBottom="@+id/address_bar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
     <WebView
         android:id="@+id/search_webview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:layout_marginTop="32dp"
+        android:focusable="true">
     </WebView>
-</LinearLayout>
+
+</RelativeLayout>
