@@ -6,7 +6,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import riva.init.quackgo.history.SearchHistoryDataSource;

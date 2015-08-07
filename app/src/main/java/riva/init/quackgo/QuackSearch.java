@@ -7,17 +7,22 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import butterknife.Bind;
+import butterknife.BindString;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import riva.init.quackgo.history.SearchHistoryDataSource;
 
 
@@ -26,35 +31,24 @@ public class QuackSearch extends ActionBarActivity {
     private static final String searchEngine = "http://www.google.com/#q=";
     private static final String TAG = QuackSearch.class.getSimpleName();
 
-    private AutoCompleteTextView _searchField;
-    private Button _searchButton;
-    private Switch _internetState;
+    @Bind(R.id.search_bar) AutoCompleteTextView _searchField;
+    @Bind(R.id.search_button) Button _searchButton;
+    @Bind(R.id.internet_state) Switch _internetState;
+    @BindString(R.string.empty_search_field) String empty_search_field;
 
     private SearchHistoryDataSource searchHistoryDataSource;
-
-    private void instantiate() {
-        _searchField = (AutoCompleteTextView) findViewById(R.id.search_bar);
-        _searchButton = (Button) findViewById(R.id.search_button);
-        _internetState = (Switch) findViewById(R.id.internet_state);
-        searchHistoryDataSource = new SearchHistoryDataSource(this);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_augmented_search);
-        instantiate();
+        ButterKnife.bind(this);
+
+        searchHistoryDataSource = new SearchHistoryDataSource(this);
 
         if (isConnected()) _internetState.toggle();
 
         registerReceiver(new ConnectivityChangeReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-        _searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchOnBrowser();
-            }
-        });
 
         SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
         _searchField.setAdapter(suggestionsAdapter);
@@ -64,9 +58,10 @@ public class QuackSearch extends ActionBarActivity {
         return _searchField.getEditableText().toString().trim().equals("") || (_searchField.getEditableText() == null);
     }
 
-    private void searchOnBrowser() {
+    @OnClick(R.id.search_button)
+    public void openSearchResults() {
         if (isEmpty()) {
-            Toast.makeText(this, R.string.empty_search_field, Toast.LENGTH_SHORT);
+            Toast.makeText(this, empty_search_field, Toast.LENGTH_SHORT).show();
         } else {
             try {
                 searchHistoryDataSource.open();
@@ -75,10 +70,9 @@ public class QuackSearch extends ActionBarActivity {
             } catch (Exception e) {
                 Log.e(TAG, "Error in database operations. " + e.getMessage());
             }
-            String url = searchEngine + _searchField.getEditableText().toString();
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
+            Intent searchResults = new Intent(QuackSearch.this, SearchWebView.class);
+            searchResults.putExtra("keyword", _searchField.getEditableText().toString());
+            startActivity(searchResults);
         }
     }
 
