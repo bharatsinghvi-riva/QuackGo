@@ -9,8 +9,6 @@ import retrofit.http.Query;
  * Created by bharat.s on 8/7/15.
  */
 public interface HTTPSuggestionsFetcher {
-
     @GET("/sugg")
     ArrayList<String> getHTTPSuggestions(@Query("nResults") int numResults, @Query("command") String keyword);
-
 }
