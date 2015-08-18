@@ -111,6 +111,12 @@ public class QuackSearch extends ActionBarActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(connectivityChangeReceiver);
