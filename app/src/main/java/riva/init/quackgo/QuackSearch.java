@@ -39,6 +39,7 @@ public class QuackSearch extends ActionBarActivity {
     private SearchHistoryDataSource searchHistoryDataSource;
     private ConnectivityManager connectivityManager;
     private MyApp myApp;
+    private ConnectivityChangeReceiver connectivityChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +50,11 @@ public class QuackSearch extends ActionBarActivity {
         myApp = (MyApp) getApplicationContext();
         connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         searchHistoryDataSource = new SearchHistoryDataSource(myApp.getMySQLiteDb());
+        connectivityChangeReceiver = new ConnectivityChangeReceiver();
 
         if (isConnected()) _internetState.toggle();
 
-        registerReceiver(new ConnectivityChangeReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         _searchField = (SearchAutoCompleteTextView) findViewById(R.id.search_bar);
         SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
@@ -106,5 +108,17 @@ public class QuackSearch extends ActionBarActivity {
             if(isConnected) _internetState.setChecked(true);
             else _internetState.setChecked(false);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityChangeReceiver);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(connectivityChangeReceiver);
     }
 }
