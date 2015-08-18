@@ -21,12 +21,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <WebView
-        android:id="@+id/search_webview"
+    <LinearLayout
+        android:id="@+id/webview_parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginTop="32dp"
-        android:focusable="true">
-    </WebView>
+        android:orientation="vertical"
+        android:layout_below="@+id/address_bar">
+    </LinearLayout>
 
 </RelativeLayout>

@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,18 +28,18 @@ public class SearchWebView extends Activity {
 
     private static final String SEARCH_ENGINE = "http://www.google.com/#q=";
 
-    @Bind(R.id.search_webview) WebView searchWebView;
+    @Bind(R.id.webview_parent) LinearLayout webviewParent;
     @Bind(R.id.address_bar) EditText addressBar;
     @Bind(R.id.search_button_webview) Button searchButton;
+    WebView searchWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_web_view);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        String URL = SEARCH_ENGINE + extras.getString("keyword");
+        searchWebView = new WebView(this);
+        webviewParent.addView(searchWebView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
         searchWebView.getSettings().setJavaScriptEnabled(true);
         searchWebView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -45,6 +47,9 @@ public class SearchWebView extends Activity {
                 return true;
             }
         });
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        String URL = SEARCH_ENGINE + extras.getString("keyword");
         searchWebView.loadUrl(URL);
         hideKeyBoard();
     }

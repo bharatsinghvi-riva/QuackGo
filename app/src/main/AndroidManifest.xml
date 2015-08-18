@@ -22,7 +22,8 @@
         </activity>
         <activity
             android:name=".SearchWebView"
-            android:label="@string/title_activity_search_web_view" >
+            android:label="@string/title_activity_search_web_view"
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
     </application>
 
