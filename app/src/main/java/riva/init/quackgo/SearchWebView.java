@@ -25,6 +25,7 @@ import butterknife.OnClick;
 public class SearchWebView extends Activity {
 
     private static final String SEARCH_ENGINE = "http://www.google.com/#q=";
+
     @Bind(R.id.search_webview) WebView searchWebView;
     @Bind(R.id.address_bar) EditText addressBar;
     @Bind(R.id.search_button_webview) Button searchButton;
@@ -44,7 +45,6 @@ public class SearchWebView extends Activity {
                 return true;
             }
         });
-
         searchWebView.loadUrl(URL);
         hideKeyBoard();
     }
@@ -63,18 +63,4 @@ public class SearchWebView extends Activity {
         hideKeyBoard();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search_web_view, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

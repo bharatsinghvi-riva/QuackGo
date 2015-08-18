@@ -15,16 +15,15 @@ public class MySQLiteDb extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "searchHistory";
     public static final String TABLE_COLUMN = "search_text";
 
-    private static final String DATABASE_CREATE = "CREATE TABLE " + TABLE_NAME + " ("
-            + TABLE_COLUMN + " TEXT NOT NULL);";
+    private static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME + " (" + TABLE_COLUMN + " TEXT NOT NULL);";
 
-    MySQLiteDb(Context context) {
+    public MySQLiteDb(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DATABASE_CREATE);
+        db.execSQL(TABLE_CREATE);
     }
 
     @Override

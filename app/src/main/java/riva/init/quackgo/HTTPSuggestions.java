@@ -1,7 +1,7 @@
 package riva.init.quackgo;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.RestAdapter;
 
@@ -12,11 +12,12 @@ import retrofit.RestAdapter;
 public class HTTPSuggestions {
 
     private static final String BASE_URL = "https://complete.reports.mn/";
+    private static final int NUMBER_OF_SUGGESTIONS = 5;
 
-    public static ArrayList<String> retrieveHTTPSuggestions(String keyword) throws IOException {
+    public static List<String> retrieveHTTPSuggestions(String keyword) throws IOException {
         RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).build();
         HTTPSuggestionsFetcher httpSuggestionsFetcher = restAdapter.create(HTTPSuggestionsFetcher.class);
-        return httpSuggestionsFetcher.getHTTPSuggestions(5, keyword);
+        return httpSuggestionsFetcher.getHTTPSuggestions(NUMBER_OF_SUGGESTIONS, keyword);
     }
 
 }

@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class SearchHistoryDataSource {
 
-    private MySQLiteDb mySQLiteDb;
+    private static MySQLiteDb mySQLiteDb;
     private SQLiteDatabase database;
-    private String[] allcols = {MySQLiteDb.TABLE_COLUMN};
+    private String[] allcols = { MySQLiteDb.TABLE_COLUMN };
 
-    public SearchHistoryDataSource(Context context) {
-        mySQLiteDb = new MySQLiteDb(context);
+    public SearchHistoryDataSource(MySQLiteDb mySQLiteDb) {
+        this.mySQLiteDb = mySQLiteDb;
     }
 
     public void open() throws SQLException {
@@ -32,29 +32,21 @@ public class SearchHistoryDataSource {
 
     public void insertSearchHistory(String searchText) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MySQLiteDb.TABLE_COLUMN,searchText);
+        contentValues.put(MySQLiteDb.TABLE_COLUMN, searchText);
         database.insert(MySQLiteDb.TABLE_NAME, null, contentValues);
-    }
-
-    public void deleteAllHistory() {
-        database.delete(MySQLiteDb.TABLE_NAME, null, null);
     }
 
     public ArrayList<String> getRelevantSearchHistory(String keyword) {
         ArrayList<String> relevantLocalSearch = new ArrayList<>();
         Cursor cursor = database.query(MySQLiteDb.TABLE_NAME, allcols, MySQLiteDb.TABLE_COLUMN + " LIKE '" + keyword + "%'", null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
             relevantLocalSearch.add(cursorToSearchHistory(cursor).toString());
-            cursor.moveToNext();
-        }
         cursor.close();
         return relevantLocalSearch;
     }
 
-    public SearchHistory cursorToSearchHistory(Cursor cursor) {
-        SearchHistory searchHistory = new SearchHistory();
-        searchHistory.setSearchText(cursor.getString(0));
-        return searchHistory;
+    public SearchHistoryItem cursorToSearchHistory(Cursor cursor) {
+        SearchHistoryItem searchHistoryItem = new SearchHistoryItem(cursor.getString(cursor.getColumnIndex(MySQLiteDb.TABLE_COLUMN)));
+        return searchHistoryItem;
     }
 }

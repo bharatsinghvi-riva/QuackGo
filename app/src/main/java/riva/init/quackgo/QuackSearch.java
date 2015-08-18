@@ -29,7 +29,6 @@ import riva.init.quackgo.history.SearchHistoryDataSource;
 
 public class QuackSearch extends ActionBarActivity {
 
-    private static final String searchEngine = "http://www.google.com/?q=";
     private static final String TAG = QuackSearch.class.getSimpleName();
 
     @Bind(R.id.search_bar) AutoCompleteTextView _searchField;
@@ -38,6 +37,8 @@ public class QuackSearch extends ActionBarActivity {
     @BindString(R.string.empty_search_field) String empty_search_field;
 
     private SearchHistoryDataSource searchHistoryDataSource;
+    private ConnectivityManager connectivityManager;
+    private MyApp myApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,9 @@ public class QuackSearch extends ActionBarActivity {
         setContentView(R.layout.activity_augmented_search);
         ButterKnife.bind(this);
 
-        searchHistoryDataSource = new SearchHistoryDataSource(this);
+        myApp = (MyApp) getApplicationContext();
+        connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        searchHistoryDataSource = new SearchHistoryDataSource(myApp.getMySQLiteDb());
 
         if (isConnected()) _internetState.toggle();
 
@@ -62,8 +65,7 @@ public class QuackSearch extends ActionBarActivity {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification stickyNotification = new Notification(R.mipmap.ic_launcher, null, System.currentTimeMillis());
-        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification_custom_view);
-        stickyNotification.contentView = notificationView;
+        stickyNotification.contentView = new RemoteViews(getPackageName(), R.layout.notification_custom_view);
         stickyNotification.flags = Notification.FLAG_NO_CLEAR;
         stickyNotification.contentIntent = contentIntent;
         notificationManager.notify(1, stickyNotification);
@@ -92,47 +94,16 @@ public class QuackSearch extends ActionBarActivity {
     }
 
     private boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_quack_search, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private class ConnectivityChangeReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isConnected = isConnected();
-            if(isConnected) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        _internetState.setChecked(true);
-                    }
-                });
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        _internetState.setChecked(false);
-                    }
-                });
-            }
+            if(isConnected) _internetState.setChecked(true);
+            else _internetState.setChecked(false);
         }
     }
 }

@@ -8,6 +8,7 @@ import android.widget.Filterable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import riva.init.quackgo.history.SearchHistoryDataSource;
 
@@ -18,7 +19,7 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterab
 
     private static final String TAG = SuggestionsAdapter.class.getSimpleName();
     private ArrayList<String> localSuggestionsList;
-    private ArrayList<String> httpSuggestionsList;
+    private List<String> httpSuggestionsList;
     private ArrayList<String> allSuggestionsList;
 
     private SearchHistoryDataSource searchHistoryDataSource;
@@ -28,7 +29,7 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterab
         httpSuggestionsList = new ArrayList<>();
         localSuggestionsList = new ArrayList<>();
         allSuggestionsList = new ArrayList<>();
-        searchHistoryDataSource = new SearchHistoryDataSource(context);
+        searchHistoryDataSource = new SearchHistoryDataSource(((MyApp)context.getApplicationContext()).getMySQLiteDb());
         setNotifyOnChange(true);
     }
 

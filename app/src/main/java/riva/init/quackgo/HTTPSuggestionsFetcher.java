@@ -1,6 +1,6 @@
 package riva.init.quackgo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.http.GET;
 import retrofit.http.Query;
@@ -10,5 +10,5 @@ import retrofit.http.Query;
  */
 public interface HTTPSuggestionsFetcher {
     @GET("/sugg")
-    ArrayList<String> getHTTPSuggestions(@Query("nResults") int numResults, @Query("command") String keyword);
+    List<String> getHTTPSuggestions(@Query("nResults") int numResults, @Query("command") String keyword);
 }
