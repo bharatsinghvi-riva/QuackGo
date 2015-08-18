@@ -90,12 +90,8 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements HTTPFilt
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 setNotifyOnChange(false);
-                List<String> localSuggestions = new ArrayList<>();
-                for (int i = 0; i < getCount(); i++) {
-                    localSuggestions.add(getItem(i));
-                }
                 clear();
-                addAll(localSuggestions);
+                addAll(localSuggestionsList);
                 if (results != null && results.count > 0) {
                     addAll((List<String>) results.values);
                 }
