@@ -119,6 +119,10 @@ public class QuackSearch extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(connectivityChangeReceiver);
+        try {
+            unregisterReceiver(connectivityChangeReceiver);
+        } catch (Exception e) {
+            Log.d(TAG, "Already unregistered broadcast receiver");
+        }
     }
 }
