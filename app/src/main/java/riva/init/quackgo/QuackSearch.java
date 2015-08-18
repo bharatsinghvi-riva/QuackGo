@@ -31,7 +31,7 @@ public class QuackSearch extends ActionBarActivity {
 
     private static final String TAG = QuackSearch.class.getSimpleName();
 
-    @Bind(R.id.search_bar) AutoCompleteTextView _searchField;
+    SearchAutoCompleteTextView _searchField;
     @Bind(R.id.search_button) Button _searchButton;
     @Bind(R.id.internet_state) Switch _internetState;
     @BindString(R.string.empty_search_field) String empty_search_field;
@@ -54,8 +54,9 @@ public class QuackSearch extends ActionBarActivity {
 
         registerReceiver(new ConnectivityChangeReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
+        _searchField = (SearchAutoCompleteTextView) findViewById(R.id.search_bar);
         SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(this, android.R.layout.simple_expandable_list_item_1);
-        _searchField.setAdapter(suggestionsAdapter);
+        _searchField.setCustomAdapter(suggestionsAdapter);
 
         setStickyNotification();
     }

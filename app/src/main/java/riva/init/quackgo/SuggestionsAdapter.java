@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.Filterable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,12 +15,11 @@ import riva.init.quackgo.history.SearchHistoryDataSource;
 /**
  * Created by bharat.s on 8/5/15.
  */
-public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterable {
+public class SuggestionsAdapter extends ArrayAdapter<String> implements HTTPFilterable {
 
     private static final String TAG = SuggestionsAdapter.class.getSimpleName();
     private ArrayList<String> localSuggestionsList;
     private List<String> httpSuggestionsList;
-    private ArrayList<String> allSuggestionsList;
 
     private SearchHistoryDataSource searchHistoryDataSource;
 
@@ -28,19 +27,8 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterab
         super(context, resourceId);
         httpSuggestionsList = new ArrayList<>();
         localSuggestionsList = new ArrayList<>();
-        allSuggestionsList = new ArrayList<>();
-        searchHistoryDataSource = new SearchHistoryDataSource(((MyApp)context.getApplicationContext()).getMySQLiteDb());
+        searchHistoryDataSource = new SearchHistoryDataSource(((MyApp) context.getApplicationContext()).getMySQLiteDb());
         setNotifyOnChange(true);
-    }
-
-    @Override
-    public int getCount() {
-        return allSuggestionsList.size();
-    }
-
-    @Override
-    public String getItem(int index) {
-        return allSuggestionsList.get(index);
     }
 
     @Override
@@ -50,31 +38,68 @@ public class SuggestionsAdapter extends ArrayAdapter<String> implements Filterab
             protected FilterResults performFiltering(CharSequence constraint) {
                 if (constraint != null) {
                     try {
-                        httpSuggestionsList = new ArrayList<>();
-                        httpSuggestionsList = HTTPSuggestions.retrieveHTTPSuggestions(constraint.toString());
                         localSuggestionsList = new ArrayList<>();
                         searchHistoryDataSource.open();
                         localSuggestionsList = searchHistoryDataSource.getRelevantSearchHistory(constraint.toString());
                         searchHistoryDataSource.close();
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to retrieve suggestions. " + e.getMessage());
+                        Log.e(TAG, "Failed to retrieve local suggestions. " + e.getMessage());
                     }
                 }
-                HashSet<String> allSuggestionsSet = new HashSet<>();
-                allSuggestionsSet.addAll(localSuggestionsList);
-                allSuggestionsSet.addAll(httpSuggestionsList);
-                allSuggestionsList = new ArrayList<>();
-                allSuggestionsList.addAll(allSuggestionsSet);
+                HashSet<String> localSuggestionsSet = new HashSet<>();
+                localSuggestionsSet.addAll(localSuggestionsList);
+                localSuggestionsList.clear();
+                localSuggestionsList.addAll(localSuggestionsSet);
                 FilterResults results = new FilterResults();
-                results.values = allSuggestionsList;
-                results.count = allSuggestionsList.size();
+                results.values = localSuggestionsList;
+                results.count = localSuggestionsList.size();
                 return results;
             }
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null && results.count > 0) notifyDataSetChanged();
-                else notifyDataSetInvalidated();
+                setNotifyOnChange(false);
+                clear();
+                if (results != null && results.count > 0) {
+                    addAll((List<String>) results.values);
+                }
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    @Override
+    public Filter httpSuggestionsFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                Log.d(TAG, "HTTP Suggestions constraint: " + constraint.toString());
+                try {
+                    httpSuggestionsList = new ArrayList<>();
+                    httpSuggestionsList = HTTPSuggestions.retrieveHTTPSuggestions(constraint.toString());
+                    Log.d(TAG, httpSuggestionsList.toString());
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to retrieve remote suggestions. " + e.getMessage());
+                }
+                FilterResults results = new FilterResults();
+                results.values = httpSuggestionsList;
+                results.count = httpSuggestionsList.size();
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                setNotifyOnChange(false);
+                List<String> localSuggestions = new ArrayList<>();
+                for (int i = 0; i < getCount(); i++) {
+                    localSuggestions.add(getItem(i));
+                }
+                clear();
+                addAll(localSuggestions);
+                if (results != null && results.count > 0) {
+                    addAll((List<String>) results.values);
+                }
+                notifyDataSetChanged();
             }
         };
     }
